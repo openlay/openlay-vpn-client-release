@@ -1,0 +1,30 @@
+[Unit]
+Description=OpenLay VPN client (reconnect-on-TTL daemon)
+Documentation=file:///opt/olv-vpn/README.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+Environment=PYTHONPATH=/opt/olv-vpn
+Environment=OLV_VPN_DIR=/opt/olv-vpn
+# Unbuffered stdout/stderr so `journalctl -u olv-vpn -f` shows output in real
+# time; default Python buffering hides everything until the daemon exits.
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/usr/bin/python3 -m olv_vpn.cli daemon
+Restart=on-failure
+RestartSec=10
+# Keep stdout/stderr in the journal for `journalctl -u olv-vpn`.
+StandardOutput=journal
+StandardError=journal
+
+# Lock things down a bit — daemon needs root for wg-quick + tpm2 but doesn't
+# need everything.
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/etc/wireguard /etc/olv /var/lib/olv /run
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
