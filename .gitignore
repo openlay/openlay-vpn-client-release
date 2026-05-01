@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+
+# Notarize intermediate
+*.zip
+notarize-*.log
+
+# Old/extra macOS app — only OpenLayVPN.dmg should be tracked for distribution
+macos-client/OpenLayVPN.app/
+macos-client/*.app/
+macos-client/build/
